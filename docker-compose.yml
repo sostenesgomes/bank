@@ -1,0 +1,28 @@
+app:
+    build: .
+    dockerfile: Dockerfile.development
+    volumes:
+        - .:/bank
+    ports:
+        - 4000:4000
+
+dev:
+    extends: app
+    environment:
+        - USER
+        - USERNAME
+        - MIX_ENV=dev
+        - PG_HOST=db
+        - PG_USERNAME=postgres
+        - PG_PASSWORD=postgres
+        - ENDPOINT_HOST=localhost:4000
+    tty: true    
+    links:
+        - db
+
+db:
+    image: postgres:9.5
+    environment:
+        - POSTGRES_PASSWORD=postgres
+    ports:
+        - 5432    

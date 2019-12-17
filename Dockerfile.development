@@ -1,0 +1,19 @@
+FROM elixir:alpine
+
+RUN apk update && apk add inotify-tools postgresql-dev \
+    && apk add --no-cache build-base
+
+RUN mkdir -p /bank
+COPY . /bank
+WORKDIR /bank
+
+RUN mix local.hex --force \
+    && mix local.rebar --force \
+    && mix deps.get && mix deps.compile
+
+ENV MIX_ENV dev
+
+EXPOSE 4000
+
+CMD mix ecto.setup && \
+    mix phx.server  

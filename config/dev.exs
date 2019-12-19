@@ -4,7 +4,7 @@ use Mix.Config
 config :bank, Bank.Repo,
   username: System.get_env("PG_PASSWORD") || "postgres",
   password: System.get_env("PG_PASSWORD") || "postgres",
-  database: "bank_readstore_dev",
+  database: "bank_dev",
   hostname: System.get_env("PG_HOST") || "localhost",
   port: 5432,
   #username: "postgres",

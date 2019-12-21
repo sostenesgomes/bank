@@ -11,7 +11,5 @@ defmodule Bank.Repo.Migrations.CreateAccounts do
 
       timestamps()
     end
-
-    create constraint("accounts", :balance_should_not_be_negative, check: "balance >= 0")
   end
 end

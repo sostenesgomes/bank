@@ -23,6 +23,7 @@ defmodule BankWeb.Router do
   scope "/api", BankWeb do
     pipe_through :api
 
-    get "/", PageController, :show
+    post "/users/create", UserController, :create
+    #post "/users/login", UserController, :login
   end
 end

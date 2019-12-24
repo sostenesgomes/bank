@@ -11,5 +11,7 @@ defmodule Bank.Repo.Migrations.CreateAccounts do
 
       timestamps()
     end
+
+    create unique_index(:accounts, [:code])
   end
 end

@@ -9,5 +9,7 @@ defmodule Bank.Repo.Migrations.CreateOperations do
       timestamps()
     end
 
+    create unique_index(:agencies, [:code])
+    create unique_index(:agencies, [:title])
   end
 end

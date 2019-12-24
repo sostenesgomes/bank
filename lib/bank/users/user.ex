@@ -2,10 +2,13 @@ defmodule Bank.Users.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Bank.Accounts.Account
+
   schema "users" do
     field :email, :string
     field :name, :string
     field :password, :string
+    has_many :account, Account
 
     timestamps()
   end

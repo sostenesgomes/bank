@@ -35,8 +35,14 @@ defmodule Bank.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_account!(id), do: Repo.get!(Account, id) |> Repo.preload(:user) |> Repo.preload(:agency)
+  def get_account!(id) do 
+    account = 
+      Repo.get!(Account, id) 
+      |> Repo.preload(:user) 
+      |> Repo.preload(:agency)
 
+    account
+  end  
   @doc """
   Creates a account.
 
@@ -103,4 +109,5 @@ defmodule Bank.Accounts do
   def change_account(%Account{} = account) do
     Account.changeset(account, %{})
   end
+
 end

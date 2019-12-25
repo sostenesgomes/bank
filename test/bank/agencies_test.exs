@@ -11,6 +11,11 @@ defmodule Bank.AgenciesTest do
       assert Agencies.get_agency!(agency.id) == agency
     end
 
+    test "get_by_code_dg!/2 returns the agency with given code and digit" do
+      agency = agency_fixture()
+      assert Agencies.get_agency_by_code_dg!(agency.code, agency.digit) == agency
+    end
+
     test "create_agency/1 with valid data creates a agency" do
       attrs = agency_valid_attrs()
       assert {:ok, %Agency{} = agency} = Agencies.create_agency(attrs)

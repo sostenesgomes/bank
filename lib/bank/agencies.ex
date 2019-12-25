@@ -38,6 +38,19 @@ defmodule Bank.Agencies do
   def get_agency!(id), do: Repo.get!(Agency, id)
 
   @doc """
+  Gets a single agency by code and digit.
+
+  ## Examples
+
+      iex> get_by_code_dg!(1234, 0)
+      %Agency{}
+
+      iex> get_by_code_dg!(456)
+      ** (Ecto.NoResultsError)
+  """
+  def get_agency_by_code_dg!(code, digit), do: Repo.get_by(Agency, [code: code, digit: digit])
+
+  @doc """
   Creates a agency.
 
   ## Examples

@@ -35,7 +35,7 @@ defmodule Bank.Accounts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_account!(id), do: Repo.get!(Account, id)
+  def get_account!(id), do: Repo.get!(Account, id) |> Repo.preload(:user) |> Repo.preload(:agency)
 
   @doc """
   Creates a account.

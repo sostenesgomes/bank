@@ -14,10 +14,11 @@ defmodule Bank.AccountsTest do
       user = user_fixture()
       agency = agency_fixture()
 
-      {:ok, account} =
+      account_params =
         attrs
         |> Enum.into(@valid_attrs)
-        |> Accounts.create_account(user, agency)
+
+      {:ok, account} = Accounts.create_account(user, agency, account_params)          
 
       account
     end

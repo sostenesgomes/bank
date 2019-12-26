@@ -9,3 +9,8 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+# Seeds for Agencies
+alias Bank.Agencies
+
+Agencies.create_agency(%{name: "Agency One", code: 1234, digit: 0})

@@ -30,7 +30,7 @@ defmodule Bank.TestHelpers do
     def agency_fixture(attrs \\ %{}) do
       {:ok, agency} =
         attrs
-        |> Enum.into(%{name: "Agency One", code: 1234, digit: 0})
+        |> Enum.into(agency_valid_attrs())
         |> Agencies.create_agency()
 
       agency

@@ -8,8 +8,7 @@ defmodule Bank.Repo.Migrations.CreateTransactions do
       add :new_account_balance, :decimal, null: false
       add :operation_id, references(:operations), null: false
       add :account_id, references(:accounts), null: false
-      add :from_account_id, references(:accounts)
-      add :to_account_id, references(:accounts)
+      add :target_account_id, references(:accounts)
 
       timestamps()
     end

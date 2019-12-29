@@ -5,7 +5,6 @@ defmodule Bank.Transaction do
   schema "transactions" do
     field :account_id, :integer
     field :ammount, :decimal
-    field :from_account_id, :integer
     field :new_account_ammount, :decimal
     field :operation_id, :integer
     field :prev_account_value, :decimal

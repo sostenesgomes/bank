@@ -4,6 +4,7 @@ defmodule Bank.Accounts do
   """
 
   import Ecto.Query, warn: false
+  alias Ecto.UUID
   alias Bank.Repo
 
   alias Bank.Accounts.Account
@@ -48,14 +49,16 @@ defmodule Bank.Accounts do
 
   ## Examples
 
-      iex> create_account(%{field: value})
+      iex> create_account(user, agency)
       {:ok, %Account{}}
 
-      iex> create_account(%{field: bad_value})
+      iex> create_account(%{})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_account(user, agency, attrs \\ %{}) do
+  def create_account(user, agency) do
+    attrs = %{code: generate_account_code(user.id), digit: 1, balance: 0}
+    
     %Account{}
     |> Account.changeset(attrs)
     |> Ecto.Changeset.put_assoc(:user, user)
@@ -108,6 +111,20 @@ defmodule Bank.Accounts do
   """
   def change_account(%Account{} = account) do
     Account.changeset(account, %{})
+  end
+
+  @doc """
+  Returns and String containing a code to account
+
+    iex> generate_account_code(account)
+    %Ecto.Changeset{source: %Account{}}
+
+  """
+  def generate_account_code(user_id) do
+    if user_id > 0 do
+      time = Time.utc_now
+      "#{time.second}#{user_id}#{time.minute}"
+    end
   end
 
 end

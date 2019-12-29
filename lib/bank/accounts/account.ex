@@ -6,7 +6,7 @@ defmodule Bank.Accounts.Account do
   alias Bank.Users.User
 
   schema "accounts" do
-    field :code, :integer
+    field :code, :string
     field :digit, :integer
     field :balance, :decimal
     belongs_to :user, User

@@ -4,8 +4,11 @@ defmodule Bank.Users do
   """
 
   import Ecto.Query, warn: false
+  
+  alias Ecto.Multi
   alias Bank.Repo
-
+  alias Bank.Accounts
+  alias Bank.Agencies
   alias Bank.Users.User
 
   @doc """
@@ -55,6 +58,25 @@ defmodule Bank.Users do
     |> Repo.insert()
   end
 
+  @doc false
+  def create_user_account(agency, attrs \\ %{}) do
+    Multi.new()
+      |> Multi.run(:user, fn _, _ ->
+        create_user(attrs)
+      end)  
+      |> Multi.run(:account, fn _, %{user: user} ->
+        Accounts.create_account(user, agency)
+      end)  
+      |> Repo.transaction()
+      |> case do
+        {:ok, %{user: user, account: account}} ->
+          {:ok, user}
+  
+        {:error, failed_operation, failed_value, changes_so_far} ->
+          {:error, failed_value}
+      end
+  end 
+  
   @doc """
   Updates a user.
 

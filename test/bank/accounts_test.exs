@@ -6,19 +6,11 @@ defmodule Bank.AccountsTest do
   describe "accounts" do
     alias Bank.Accounts.Account
 
-    @valid_attrs %{code: 985698, digit: 1, balance: 0}
-    @update_attrs %{}
-    @invalid_attrs %{code: nil, digit: nil, agency_id: nil, user_id: nil, balance: nil}
-
-    def account_fixture(attrs \\ %{}) do
+    def account_fixture() do
       user = user_fixture()
       agency = agency_fixture()
 
-      account_params =
-        attrs
-        |> Enum.into(@valid_attrs)
-
-      {:ok, account} = Accounts.create_account(user, agency, account_params)          
+      {:ok, account} = Accounts.create_account(user, agency)          
 
       account
     end
@@ -28,20 +20,14 @@ defmodule Bank.AccountsTest do
       assert Accounts.get_account!(account.id) == account
     end
 
-    test "create_account/3 with valid data creates a account" do
+    test "create_account/2 with valid data creates a account" do
       user = user_fixture()
       agency = agency_fixture()
 
-      assert {:ok, %Account{} = account} = Accounts.create_account(user, agency, @valid_attrs)
+      assert {:ok, %Account{} = account} = Accounts.create_account(user, agency)
     end
 
-    test "create_account/3 with invalid data returns error changeset" do
-      user = nil
-      agency = nil
-      assert {:error, %Ecto.Changeset{}} = Accounts.create_account(user, agency, @invalid_attrs)
-    end
-
-    """
+    '
     test "update_account/2 with valid data updates the account" do
       account = account_fixture()
       assert {:ok, %Account{} = account} = Accounts.update_account(account, @update_attrs)
@@ -63,6 +49,11 @@ defmodule Bank.AccountsTest do
       account = account_fixture()
       assert %Ecto.Changeset{} = Accounts.change_account(account)
     end
-    """
+    '
+
+    test "generate_account_code/1 returns the account code" do
+      assert Accounts.generate_account_code(123) =~ "123"
+    end
+
   end
 end

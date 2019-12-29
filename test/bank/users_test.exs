@@ -15,6 +15,13 @@ defmodule Bank.UsersTest do
       attrs = user_valid_attrs()
       assert {:ok, %User{} = user} = Users.create_user(attrs)
     end
+    
+    test "create_user_account/1 with valid data creates a user with his account" do
+      attrs = user_valid_attrs()
+      agency = agency_fixture()
+
+      assert {:ok, %User{} = user} = Users.create_user_account(agency, attrs)
+    end
 
     test "create_user/1 with invalid data returns error changeset" do
       attrs = user_invalid_attrs()

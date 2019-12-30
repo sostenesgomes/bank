@@ -8,7 +8,6 @@ defmodule Bank.Users do
   alias Ecto.Multi
   alias Bank.Repo
   alias Bank.Accounts
-  alias Bank.Agencies
   alias Bank.Users.User
 
   @doc """
@@ -70,9 +69,9 @@ defmodule Bank.Users do
       |> Repo.transaction()
       |> case do
         {:ok, %{user: user, account: account}} ->
-          {:ok, user}
+          {:ok, user, account}
   
-        {:error, failed_operation, failed_value, changes_so_far} ->
+        {:error, _, failed_value, _} ->
           {:error, failed_value}
       end
   end 

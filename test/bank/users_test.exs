@@ -8,8 +8,14 @@ defmodule Bank.UsersTest do
     alias Bank.Accounts.Account
 
     test "get_user!/1 returns the user with given id" do
-      user = user_fixture()
-      assert Users.get_user!(user.id) == user
+      user_create = user_fixture()
+      user_get = Users.get_user!(user_create.id)
+      
+      assert user_create.id == user_get.id
+      assert user_create.name == user_get.name
+      assert user_create.email == user_get.email
+      
+      refute user_get.password_hash == nil
     end
 
     test "create_user/1 with valid data creates a user" do
@@ -43,11 +49,21 @@ defmodule Bank.UsersTest do
       assert %{password: ["should be 6 character(s)"]} = errors_on(changeset)
     end
     
-    test "create_user/1 with invalid email formaat" do
+    test "create_user/1 with invalid email format" do
       attrs = Map.put(user_valid_attrs(), :email, "invalidemail.com")
       changeset = User.changeset(%User{}, attrs)
       refute changeset.valid?
       assert %{email: ["has invalid format"]} = errors_on(changeset)
+    end
+    
+    test "create_user/1 with duplicate email" do
+      user_fixture()
+      
+      changeset = User.changeset(%User{}, user_valid_attrs())
+
+      {:error, changeset} = Repo.insert(changeset)
+      
+      assert %{email: ["has already been taken"]} = errors_on(changeset)
     end
   end
 end

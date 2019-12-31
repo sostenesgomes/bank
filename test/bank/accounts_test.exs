@@ -17,7 +17,18 @@ defmodule Bank.AccountsTest do
 
     test "get_account!/1 returns the account with given id" do
       account = account_fixture()
-      assert Accounts.get_account!(account.id) == account
+      account_get = Accounts.get_account!(account.id)
+      
+      assert account_get.id == account.id
+      assert account_get.code == account.code
+      assert account_get.digit == account.digit
+      assert account_get.balance == account.balance
+
+      assert Accounts.get_account!(account.id) |> Map.get(:user) |> Map.get(:name) == account.user.name
+      assert Accounts.get_account!(account.id) |> Map.get(:user) |> Map.get(:email) == account.user.email
+      
+      assert Accounts.get_account!(account.id) |> Map.get(:agency) |> Map.get(:code) == account.agency.code
+      assert Accounts.get_account!(account.id) |> Map.get(:agency) |> Map.get(:digit) == account.agency.digit
     end
 
     test "create_account/2 with valid data creates a account" do

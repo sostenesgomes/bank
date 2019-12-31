@@ -4,7 +4,6 @@ defmodule Bank.Accounts do
   """
 
   import Ecto.Query, warn: false
-  alias Ecto.UUID
   alias Bank.Repo
 
   alias Bank.Accounts.Account

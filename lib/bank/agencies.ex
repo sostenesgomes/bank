@@ -42,10 +42,10 @@ defmodule Bank.Agencies do
 
   ## Examples
 
-      iex> get_by_code_dg!(1234, 0)
+      iex> get_agency_by_code_dg!(1234, 0)
       %Agency{}
 
-      iex> get_by_code_dg!(456)
+      iex> get_agency_by_code_dg!(456)
       ** (Ecto.NoResultsError)
   """
   def get_agency_by_code_dg!(code, digit), do: Repo.get_by(Agency, [code: code, digit: digit])

@@ -13,6 +13,14 @@ defmodule BankWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :auth do
+    plug Bank.Auth.Pipeline
+  end
+
+  pipeline :ensure_authed_access do
+    plug(Guardian.Plug.EnsureAuthenticated, %{"typ" => "access", handler: Bank.HttpErrorHandler})
+  end
+
   scope "/", BankWeb do
     pipe_through :browser
 
@@ -24,6 +32,15 @@ defmodule BankWeb.Router do
     pipe_through :api
 
     post "/users/create", UserController, :create
-    #post "/users/login", UserController, :login
+    post "/users/login", UserController, :login
   end
+
+  #scope "/api", BankWeb do
+    #pipe_through [:api, :auth]
+    #resources "/transactions", TransferController, only: [:create, :show]
+    #resources "/transactions/transfers/show", PageController, :show_test
+
+    #post "/cashout", TransferController, :cashout
+    #get "/report", TransferController, :report
+  #end
 end

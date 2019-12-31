@@ -19,4 +19,11 @@ defmodule BankWeb.FallbackController do
     |> put_view(BankWeb.ErrorView)
     |> render(:"404")
   end
+
+  def call(conn, {:error, :unauthorized}) do
+    conn
+    |> put_status(:unauthorized)
+    |> render(BankWeb.ErrorView, :"401")
+  end
+
 end

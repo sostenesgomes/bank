@@ -11,7 +11,7 @@ defmodule Bank.AgenciesTest do
       assert Agencies.get_agency!(agency.id) == agency
     end
 
-    test "get_by_code_dg!/2 returns the agency with given code and digit" do
+    test "get_agency_by_code_dg!/2 returns the agency with given code and digit" do
       agency = agency_fixture()
       assert Agencies.get_agency_by_code_dg!(agency.code, agency.digit) == agency
     end

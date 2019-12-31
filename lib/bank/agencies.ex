@@ -1,0 +1,117 @@
+defmodule Bank.Agencies do
+  @moduledoc """
+  The Agencies context.
+  """
+
+  import Ecto.Query, warn: false
+  alias Bank.Repo
+
+  alias Bank.Agencies.Agency
+
+  @doc """
+  Returns the list of agencies.
+
+  ## Examples
+
+      iex> list_agencies()
+      [%Agency{}, ...]
+
+  """
+  def list_agencies do
+    Repo.all(Agency)
+  end
+
+  @doc """
+  Gets a single agency.
+
+  Raises `Ecto.NoResultsError` if the Agency does not exist.
+
+  ## Examples
+
+      iex> get_agency!(123)
+      %Agency{}
+
+      iex> get_agency!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_agency!(id), do: Repo.get!(Agency, id)
+
+  @doc """
+  Gets a single agency by code and digit.
+
+  ## Examples
+
+      iex> get_agency_by_code_dg!(1234, 0)
+      %Agency{}
+
+      iex> get_agency_by_code_dg!(456)
+      ** (Ecto.NoResultsError)
+  """
+  def get_agency_by_code_dg!(code, digit), do: Repo.get_by(Agency, [code: code, digit: digit])
+
+  @doc """
+  Creates a agency.
+
+  ## Examples
+
+      iex> create_agency(%{field: value})
+      {:ok, %Agency{}}
+
+      iex> create_agency(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_agency(attrs \\ %{}) do
+    %Agency{}
+    |> Agency.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a agency.
+
+  ## Examples
+
+      iex> update_agency(agency, %{field: new_value})
+      {:ok, %Agency{}}
+
+      iex> update_agency(agency, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_agency(%Agency{} = agency, attrs) do
+    agency
+    |> Agency.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a Agency.
+
+  ## Examples
+
+      iex> delete_agency(agency)
+      {:ok, %Agency{}}
+
+      iex> delete_agency(agency)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_agency(%Agency{} = agency) do
+    Repo.delete(agency)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking agency changes.
+
+  ## Examples
+
+      iex> change_agency(agency)
+      %Ecto.Changeset{source: %Agency{}}
+
+  """
+  def change_agency(%Agency{} = agency) do
+    Agency.changeset(agency, %{})
+  end
+end

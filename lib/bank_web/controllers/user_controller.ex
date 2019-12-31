@@ -25,7 +25,7 @@ defmodule BankWeb.UserController do
   def login(conn, %{"email" => email, "password" => password}) do
     with {:ok, user, token} <- Guardian.authenticate(email, password) do
       conn
-      |> put_status(:created)
+      |> put_status(:ok)
       |> render("user_authenticated.json", %{user: user, token: token})
     end
   end

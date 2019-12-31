@@ -18,9 +18,9 @@ defmodule Bank.UsersTest do
       refute user_get.password_hash == nil
     end
     
-    test "get_user_by_email!/1 returns the user with given email" do
+    test "get_user_by_email/1 returns the user with given email" do
       user_create = user_fixture()
-      user_get = Users.get_user_by_email!(user_create.email)
+      {:ok, user_get} = Users.get_user_by_email(user_create.email)
       
       assert user_create.id == user_get.id
       assert user_create.name == user_get.name

@@ -20,5 +20,25 @@ defmodule BankWeb.UserControllerTest do
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
+
+  describe "login" do
+    
+    test "when data is valid", %{conn: conn} do
+      user = user_fixture()
+      conn = post(conn, Routes.user_path(conn, :login), email: user.email, password: user.password)
+      response = json_response(conn, 200)
+      
+      assert user.name == Map.get(response, "name")
+      assert user.email == Map.get(response, "email")
+      assert is_bitstring(Map.get(response, "token"))
+    end
+
+    test "renders unauthorized when data is invalid", %{conn: conn} do
+      user = user_fixture()
+      conn = post(conn, Routes.user_path(conn, :login), email: user.email, password: "wrong pass")
+      
+      assert json_response(conn, 401) == "Unauthorized"
+    end
+  end
   
 end

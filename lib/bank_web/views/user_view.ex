@@ -22,14 +22,6 @@ defmodule BankWeb.UserView do
       name: user.name,
       email: user.email,
       token: token,
-      account: %{
-        code: user.account.code,
-        digit: user.account.digit,
-        agency: %{
-          code: user.account.agency.code,
-          digit: user.account.agency.digit
-        }
-      },
     }
   end
 end

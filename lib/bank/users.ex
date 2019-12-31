@@ -44,13 +44,22 @@ defmodule Bank.Users do
 
   ## Examples
 
-      iex> get_user_by_email!(email@bank.com)
-      %Agency{}
+      iex> get_user_by_email(email@bank.com)
+      {:ok, %User{}}
 
-      iex> get_user_by_email!(email_not_found@bank.com)
-      ** (Ecto.NoResultsError)
+      iex> get_user_by_email(notfound@bank.com)
+      {:error, :not_found}
   """
-  def get_user_by_email!(email), do: Repo.get_by(User, email: email)
+  def get_user_by_email(email) do 
+    Repo.get_by(User, email: email) 
+    |> Repo.preload(:account)
+    |> case do 
+        nil ->
+          {:error, :not_found}
+        user ->
+          {:ok, user}  
+      end
+  end
 
   @doc """
   Creates a user.

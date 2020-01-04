@@ -1,8 +1,8 @@
 defmodule Bank.TransactionsTest do
   use Bank.DataCase
 
-  alias Bank.Transactions
-
+  alias Bank.{Transactions, Operations, Accounts}
+  
   describe "transactions" do
     alias Bank.Transactions.Transaction
 
@@ -10,54 +10,127 @@ defmodule Bank.TransactionsTest do
     @update_attrs %{}
     @invalid_attrs %{}
 
-    def transaction_fixture(attrs \\ %{}) do
-      {:ok, transaction} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> Transactions.create_transaction()
+    @user_source %{name: "User Source", email: "user_source@transactiontest.com", password: "passwd"}
+    @user_target %{name: "User Target", email: "user_target@transactiontest.com", password: "passwd"}
 
-      transaction
-    end
-    '
-    test "list_transactions/0 returns all transactions" do
-      transaction = transaction_fixture()
-      assert Transactions.list_transactions() == [transaction]
-    end
+    @agency_attrs %{name: "Agency", code: 17815, digit: 1}
 
-    test "get_transaction!/1 returns the transaction with given id" do
-      transaction = transaction_fixture()
-      assert Transactions.get_transaction!(transaction.id) == transaction
-    end
+    test "create_transfer_sent/4 with valid data creates a transaction" do
+      operation_fixture()
+      
+      amount = -100.0
+      prev_balance = 0
+      new_balance = 100.0
 
-    test "create_transaction/1 with valid data creates a transaction" do
-      assert {:ok, %Transaction{} = transaction} = Transactions.create_transaction(@valid_attrs)
-    end
+      attrs = %{amount: amount, prev_account_balance: prev_balance, new_account_balance: new_balance}
+      agency = agency_fixture(@agency_attrs)
+      {:ok, operation} = Operations.get_operation_by_code(1) 
 
-    test "create_transaction/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Transactions.create_transaction(@invalid_attrs)
-    end
+      user_source = user_fixture(@user_source)
+      source_account = account_fixture(user_source, agency)
 
-    test "update_transaction/2 with valid data updates the transaction" do
-      transaction = transaction_fixture()
-      assert {:ok, %Transaction{} = transaction} = Transactions.update_transaction(transaction, @update_attrs)
-    end
+      user_target = user_fixture(@user_target)
+      target_account = account_fixture(user_target, agency)
 
-    test "update_transaction/2 with invalid data returns error changeset" do
-      transaction = transaction_fixture()
-      assert {:error, %Ecto.Changeset{}} = Transactions.update_transaction(transaction, @invalid_attrs)
-      assert transaction == Transactions.get_transaction!(transaction.id)
+      assert {:ok, %Transaction{} = transaction} = Transactions.create_transfer_sent(attrs, operation, source_account, target_account)
+      
+      assert transaction.account_id == source_account.id
+      assert transaction.target_account_id == target_account.id
+
+      assert transaction.prev_account_balance == prev_balance
+      assert transaction.new_account_balance == new_balance
+      assert transaction.amount == amount
+      
+      assert transaction.operation_id == operation.id
     end
 
-    test "delete_transaction/1 deletes the transaction" do
-      transaction = transaction_fixture()
-      assert {:ok, %Transaction{}} = Transactions.delete_transaction(transaction)
-      assert_raise Ecto.NoResultsError, fn -> Transactions.get_transaction!(transaction.id) end
+    test "create_transfer_sent/4 with invalid data creates a transaction" do
+      operation_fixture()
+      attrs = %{amount: nil, prev_account_balance: nil, new_account_balance: nil}
+      agency = agency_fixture(@agency_attrs)
+      {:ok, operation} = Operations.get_operation_by_code(1) 
+
+      user_source = user_fixture(@user_source)
+      source_account = account_fixture(user_source, agency)
+
+      user_target = user_fixture(@user_target)
+      target_account = account_fixture(user_target, agency)
+
+      assert {:error, %Ecto.Changeset{}} = Transactions.create_transfer_sent(attrs, operation, source_account, target_account)
     end
 
-    test "change_transaction/1 returns a transaction changeset" do
-      transaction = transaction_fixture()
-      assert %Ecto.Changeset{} = Transactions.change_transaction(transaction)
+    test "create_transfer_received/3 with valid data creates a transaction" do
+      operation_fixture()
+      
+      amount = 100.0
+      prev_balance = 0
+      new_balance = 100.0
+
+      attrs = %{amount: amount, prev_account_balance: prev_balance, new_account_balance: amount}
+      agency = agency_fixture(@agency_attrs)
+      {:ok, operation} = Operations.get_operation_by_code(2) 
+
+      user_target = user_fixture(@user_target)
+      target_account = account_fixture(user_target, agency)
+
+      assert {:ok, %Transaction{} = transaction} = Transactions.create_transfer_received(attrs, operation, target_account)
+
+      assert transaction.account_id == target_account.id
+
+      assert transaction.prev_account_balance == prev_balance
+      assert transaction.new_account_balance == new_balance
+      assert transaction.amount == amount
+      
+      assert transaction.operation_id == operation.id
     end
-    '
+
+    test "create_transfer_received/3 with invalid data creates a transaction" do
+      operation_fixture()
+      attrs = %{amount: nil, prev_account_balance: nil, new_account_balance: nil}
+      agency = agency_fixture(@agency_attrs)
+      {:ok, operation} = Operations.get_operation_by_code(2) 
+
+      user_target = user_fixture(@user_target)
+      target_account = account_fixture(user_target, agency)
+
+      assert {:error, %Ecto.Changeset{}} = Transactions.create_transfer_received(attrs, operation, target_account)
+    end
+
+    test "create_transfer/3 with valid data creates a transaction" do
+      operation_fixture()
+      
+      {:ok, operation_source} = Operations.get_operation_by_code(1)
+      {:ok, operation_target} = Operations.get_operation_by_code(2)
+      
+      agency = agency_fixture(@agency_attrs)
+      amount = 100.0
+
+      user_source = user_fixture(@user_source)
+      source_account = account_fixture(user_source, agency)
+
+      user_target = user_fixture(@user_target)
+      target_account = account_fixture(user_target, agency)
+
+      assert {:ok, %Transaction{} = source_transaction, %Transaction{} = target_transaction} = Transactions.create_transfer(source_account, target_account, amount)
+      
+      source_account_after = Accounts.get_account!(source_account.id)  
+      target_account_after = Accounts.get_account!(target_account.id)  
+
+      assert source_account_after.balance == source_account.balance - amount
+      assert target_account_after.balance == source_account.balance + amount
+
+      assert source_transaction.operation_id == operation_source.id
+      assert source_transaction.account_id == source_account.id
+      assert source_transaction.target_account_id == target_account.id
+      assert source_transaction.amount == -amount
+      assert source_transaction.prev_account_balance == source_account.balance
+      assert source_transaction.new_account_balance == source_account.balance - amount
+
+      assert target_transaction.operation_id == operation_target.id
+      assert target_transaction.account_id == target_account.id
+      assert target_transaction.amount == amount
+      assert target_transaction.prev_account_balance == target_account.balance
+      assert target_transaction.new_account_balance == target_account.balance + amount
+    end
   end
 end

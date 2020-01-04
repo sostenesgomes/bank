@@ -60,8 +60,9 @@ defmodule BankWeb.TransactionControllerTest do
   #    assert json_response(conn, 422)["errors"] != %{}
   #  end
   #end
-
+    
   describe "create transfer" do
+    '
     test "renders transaction when data is valid", %{conn: conn} do
       operation_fixture()
 
@@ -74,15 +75,11 @@ defmodule BankWeb.TransactionControllerTest do
       conn = post(conn, Routes.transaction_path(conn, :transfer), transfer: transfer)
       assert %{"id" => 1} = json_response(conn, 201)
     end
-
+    '
   #  test "renders errors when data is invalid", %{conn: conn} do
   #    conn = post(conn, Routes.transaction_path(conn, :create), transaction: @invalid_attrs)
   #    assert json_response(conn, 422)["errors"] != %{}
   #  end
   end
 
-  defp create_transaction(_) do
-    transaction = fixture(:transaction)
-    {:ok, transaction: transaction}
-  end
 end

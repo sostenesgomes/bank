@@ -35,12 +35,13 @@ defmodule BankWeb.Router do
     post "/users/login", UserController, :login
   end
 
-  #scope "/api", BankWeb do
-    #pipe_through [:api, :auth]
-    #resources "/transactions", TransferController, only: [:create, :show]
+  scope "/api", BankWeb do
+    pipe_through [:api, :auth]
+    
+    post "/transactions/transfer", TransactionController, :transfer
     #resources "/transactions/transfers/show", PageController, :show_test
 
     #post "/cashout", TransferController, :cashout
     #get "/report", TransferController, :report
-  #end
+  end
 end

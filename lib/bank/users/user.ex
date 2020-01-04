@@ -25,7 +25,7 @@ defmodule Bank.Users.User do
     |> unique_constraint(:email)
     |> put_hashed_password()
   end
-
+  
   defp put_hashed_password(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: password}}

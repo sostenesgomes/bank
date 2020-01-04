@@ -7,12 +7,12 @@ defmodule Bank.AgenciesTest do
     alias Bank.Agencies.Agency
 
     test "get_agency!/1 returns the agency with given id" do
-      agency = agency_fixture()
+      agency = agency_fixture(agency_valid_attrs())
       assert Agencies.get_agency!(agency.id) == agency
     end
 
     test "get_agency_by_code_dg!/2 returns the agency with given code and digit" do
-      agency = agency_fixture()
+      agency = agency_fixture(agency_valid_attrs())
       assert Agencies.get_agency_by_code_dg!(agency.code, agency.digit) == agency
     end
 
@@ -27,7 +27,7 @@ defmodule Bank.AgenciesTest do
     end
 
     test "change_agency/1 returns a agency changeset" do
-      agency = agency_fixture()
+      agency = agency_fixture(agency_valid_attrs())
       assert %Ecto.Changeset{} = Agencies.change_agency(agency)
     end
   end

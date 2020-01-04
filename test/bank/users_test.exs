@@ -8,7 +8,7 @@ defmodule Bank.UsersTest do
     alias Bank.Accounts.Account
 
     test "get_user!/1 returns the user with given id" do
-      user_create = user_fixture()
+      user_create = user_fixture(user_valid_attrs())
       user_get = Users.get_user!(user_create.id)
       
       assert user_create.id == user_get.id
@@ -19,7 +19,7 @@ defmodule Bank.UsersTest do
     end
     
     test "get_user_by_email/1 returns the user with given email" do
-      user_create = user_fixture()
+      user_create = user_fixture(user_valid_attrs())
       {:ok, user_get} = Users.get_user_by_email(user_create.email)
       
       assert user_create.id == user_get.id
@@ -36,7 +36,7 @@ defmodule Bank.UsersTest do
     
     test "create_user_account/1 with valid data creates a user with his account" do
       attrs = user_valid_attrs()
-      agency = agency_fixture()
+      agency = agency_fixture(agency_valid_attrs())
 
       assert {:ok, %User{} = user, %Account{} = account} = Users.create_user_account(agency, attrs)
     end
@@ -68,7 +68,7 @@ defmodule Bank.UsersTest do
     end
     
     test "create_user/1 with duplicate email" do
-      user_fixture()
+      user_fixture(user_valid_attrs())
       
       changeset = User.changeset(%User{}, user_valid_attrs())
 

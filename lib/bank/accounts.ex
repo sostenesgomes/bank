@@ -42,7 +42,29 @@ defmodule Bank.Accounts do
       |> Repo.preload(:agency)
 
     account
-  end  
+  end
+  
+  @doc """
+  Gets a single Account by code and digit.
+
+  ## Examples
+
+      iex> get_account_by_code_dg(1234, 1)
+      {:ok, %User{}}
+
+      iex> get_account_by_code_dg(0000, 5)
+      {:error, :not_found}
+  """
+  def get_account_by_code_dg(code, digit) do 
+    Repo.get_by(Account, code: code, digit: digit) 
+    |> case do 
+        nil ->
+          {:error, :not_found}
+        account ->
+          {:ok, account}  
+      end
+  end
+
   @doc """
   Creates a account.
 

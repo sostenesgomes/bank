@@ -8,10 +8,10 @@ defmodule Bank.Accounts.Account do
   schema "accounts" do
     field :code, :string
     field :digit, :integer
-    field :balance, :decimal
+    field :balance, :float
     belongs_to :user, User
     belongs_to :agency, Agency
-
+    
     timestamps()
   end
 

@@ -12,5 +12,12 @@
 
 # Seeds for Agencies
 alias Bank.Repo
+alias Bank.Agencies.Agency
+alias Bank.Operations.Operation
 
-Repo.insert!(%Bank.Agencies.Agency{name: "Agency One", code: 1234, digit: 0}, on_conflict: :nothing)
+Repo.insert!(%Agency{name: "Agency One", code: 1234, digit: 0}, on_conflict: :nothing)
+
+# Seeds for Operations
+Repo.insert!(%Operation{code: 1, title: "Transfer Sent"}, on_conflict: :nothing)
+Repo.insert!(%Operation{code: 2, title: "Transfer Received"}, on_conflict: :nothing)
+Repo.insert!(%Operation{code: 3, title: "Cashout"}, on_conflict: :nothing)

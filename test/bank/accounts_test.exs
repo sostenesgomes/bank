@@ -7,8 +7,8 @@ defmodule Bank.AccountsTest do
     alias Bank.Accounts.Account
 
     def account_fixture() do
-      user = user_fixture()
-      agency = agency_fixture()
+      user = user_fixture(user_valid_attrs())
+      agency = agency_fixture(agency_valid_attrs())
 
       {:ok, account} = Accounts.create_account(user, agency)          
 
@@ -32,8 +32,8 @@ defmodule Bank.AccountsTest do
     end
 
     test "create_account/2 with valid data creates a account" do
-      user = user_fixture()
-      agency = agency_fixture()
+      user = user_fixture(user_valid_attrs())
+      agency = agency_fixture(agency_valid_attrs())
 
       assert {:ok, %Account{} = account} = Accounts.create_account(user, agency)
     end

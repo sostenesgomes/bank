@@ -3,11 +3,8 @@ defmodule BankWeb.UserController do
 
   alias Bank.Users
   alias Bank.Users.User
-
   alias Bank.Agencies
-
   alias Bank.Accounts.Account
-
   alias Bank.Auth.Guardian
 
   action_fallback BankWeb.FallbackController

@@ -97,10 +97,10 @@ defmodule Bank.Transactions do
         create_transfer_received(target_transaction, transferReceived, target_account)
       end)
       |> Multi.run(:remove_amount, fn _, _ ->
-        Accounts.update_account(source_account, %{balance: source_new_balance})
+        Accounts.update_balance(source_account, %{balance: source_new_balance})
       end)
       |> Multi.run(:add_amount, fn _, _ ->
-        Accounts.update_account(target_account, %{balance: target_new_balance})
+        Accounts.update_balance(target_account, %{balance: target_new_balance})
       end)  
       |> Repo.transaction()
       |> case do

@@ -25,10 +25,5 @@ defmodule Bank.AgenciesTest do
       attrs = agency_invalid_attrs()
       assert {:error, %Ecto.Changeset{}} = Agencies.create_agency(attrs)
     end
-
-    test "change_agency/1 returns a agency changeset" do
-      agency = agency_fixture(agency_valid_attrs())
-      assert %Ecto.Changeset{} = Agencies.change_agency(agency)
-    end
   end
 end

@@ -132,5 +132,24 @@ defmodule Bank.TransactionsTest do
       assert target_transaction.prev_account_balance == target_account.balance
       assert target_transaction.new_account_balance == target_account.balance + amount
     end
+
+    test "create_transfer/3 with amount equal 0" do
+      operation_fixture()
+      
+      {:ok, operation_source} = Operations.get_operation_by_code(1)
+      {:ok, operation_target} = Operations.get_operation_by_code(2)
+      
+      agency = agency_fixture(@agency_attrs)
+      amount = 0.0
+
+      user_source = user_fixture(@user_source)
+      source_account = account_fixture(user_source, agency)
+
+      user_target = user_fixture(@user_target)
+      target_account = account_fixture(user_target, agency)
+
+      assert {:error, %Ecto.Changeset{} = changeset} = Transactions.create_transfer(source_account, target_account, amount)
+      assert %{amount: ["must be not equal to 0"]} = errors_on(changeset)
+    end
   end
 end

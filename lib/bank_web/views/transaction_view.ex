@@ -14,7 +14,21 @@ defmodule BankWeb.TransactionView do
     %{id: transaction.id}
   end
 
-  def render("transfer.json", %{data: data}) do
-    %{id: data.id}
+  def render("transfer.json", %{source_transaction: source_transaction, target_transaction: target_transaction}) do
+    %{
+      from: %{
+        account: "#{source_transaction.source_account.code}-#{source_transaction.source_account.digit}",
+        amount: source_transaction.amount
+      },
+      to: %{
+        account: "#{target_transaction.source_account.code}-#{target_transaction.source_account.digit}",
+        amount: target_transaction.amount
+      } 
+    }
   end
+
+  def render("account_not_found.json", %{account_not_found: account_not_found_message}) do
+    account_not_found_message
+  end
+
 end

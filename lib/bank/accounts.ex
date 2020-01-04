@@ -48,7 +48,7 @@ defmodule Bank.Accounts do
     Repo.get_by(Account, code: code, digit: digit) 
     |> case do 
         nil ->
-          {:error, :not_found}
+          {:error, :account_not_found}
         account ->
           {:ok, account}  
       end

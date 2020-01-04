@@ -21,5 +21,6 @@ defmodule Bank.Transactions.Transaction do
     transaction
     |> cast(attrs, [:amount, :prev_account_balance, :new_account_balance])
     |> validate_required([:amount, :prev_account_balance, :new_account_balance])
+    |> validate_number(:amount, not_equal_to: 0)
   end
 end

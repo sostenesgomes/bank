@@ -152,5 +152,24 @@ defmodule BankWeb.TransactionControllerTest do
     
   end
 
-
+  describe "email" do
+    test "test checkout_email with given user and amount" do
+      user = %{name: "Customer Test", email: "customermailtest@bank.com"}  
+      amount_format = "500,00"
+      
+      assert %Bamboo.Email{} = email = BankWeb.Email.cashout_email(user, amount_format)
+      
+      assert email.to == user.email
+      assert email.assigns == %{}
+      assert email.attachments == []
+      assert email.bcc == nil
+      assert email.cc == nil
+      assert email.from == "support@bank.com"
+      assert email.headers == %{}
+      assert email.private == %{}
+      assert email.subject == "Cashout Performed"
+      assert email.html_body == "<p>Hi, #{user.name}. <br><br> Your cash out has been successfully completed. <br> Amount: R$ #{amount_format}</p>"
+      assert email.text_body == "Hi, #{user.name}. Your cash out has been successfully completed. Amount: R$ #{amount_format}"
+    end
+  end
 end

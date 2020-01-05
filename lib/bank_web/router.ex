@@ -33,6 +33,8 @@ defmodule BankWeb.Router do
 
     post "/users/create", UserController, :create
     post "/users/login", UserController, :login
+
+    get "/transactions/report", TransactionController, :report
   end
 
   scope "/api", BankWeb do
@@ -40,6 +42,6 @@ defmodule BankWeb.Router do
     
     post "/transactions/transfer", TransactionController, :transfer
     post "/cashout", TransactionController, :cashout
-    #get "/report", TransferController, :report
   end
+
 end

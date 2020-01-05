@@ -172,4 +172,29 @@ defmodule BankWeb.TransactionControllerTest do
       assert email.text_body == "Hi, #{user.name}. Your cash out has been successfully completed. Amount: R$ #{amount_format}"
     end
   end
+
+  describe "report" do
+    test "test repor total", %{conn: conn} do
+      operation_fixture()
+      amount = 100.0
+
+      user_attrs = user_valid_attrs()
+      {:ok, user_source} = Users.get_user_by_email(user_attrs.email)
+      account = user_source.account
+      {:ok, _source_account} = Accounts.update_balance(account, %{balance: amount})
+      
+      user_target = user_fixture(@user_target)
+      agency_target = agency_fixture(@agency_target)
+      target_account = account_fixture(user_target, agency_target)
+
+      transfer = %{target_account_code: target_account.code, target_account_digit: target_account.digit, amount: amount}
+      post(conn, Routes.transaction_path(conn, :transfer), transfer: transfer)
+
+      conn = get(conn, Routes.transaction_path(conn, :report), type: "total")
+      response = json_response(conn, 200)
+
+      assert "R$ 100,00" == Map.get(response, "total_added")
+      assert "R$ -100,00" == Map.get(response, "total_removed")
+    end
+  end
 end

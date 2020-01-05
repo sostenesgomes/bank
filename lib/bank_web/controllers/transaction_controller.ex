@@ -32,6 +32,18 @@ defmodule BankWeb.TransactionController do
     end
   end
 
+  def report(conn, report_params) do
+    
+    report_params["type"]
+      |> case do
+        "total" ->
+          {:ok, total_added, total_removed} = report("total")
+          conn
+            |> put_status(:ok)
+            |> render("report.json", %{total_added: total_added, total_removed: total_removed})
+      end 
+  end
+
   defp validate_transfer_params(params) do
     types = %{target_account_code: :string, target_account_digit: :integer, amount: :float}
     changeset = 
@@ -64,6 +76,35 @@ defmodule BankWeb.TransactionController do
     %Bank.EmailLog{}
       |> Bank.EmailLog.changeset(%{bamboo_struct: Jason.encode(email), status: 1})
       |> Repo.insert()
-  end    
+  end
+  
+  defp report(type) when type == "total" do
+    import Ecto.Query 
+    
+    total_added = 
+      Repo.one(from t in Transaction, where: t.amount > ^0, select: sum(t.amount))
+        |> case do
+          nil ->
+            0
+        value when value > 0 ->
+          format_value_to_money(value)
+        end
+        
+    total_removed = 
+      Repo.one(from t in Transaction, where: t.amount < ^0, select: sum(t.amount))
+        |> case do
+          nil ->
+            0
+        value when value < 0 ->
+          format_value_to_money(value)
+        end  
+    
+    {:ok, total_added, total_removed}
+  end
+
+  defp format_value_to_money(value) do
+    money = Money.add(Money.new(0), value)
+    Money.to_string(money)
+  end
 
 end

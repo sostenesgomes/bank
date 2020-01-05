@@ -49,7 +49,7 @@ defmodule Bank.AccountsTest do
       assert account_changed.balance == new_balance
     end
     
-    test "update_account/2 with invalid data returns error changeset" do
+    test "update_balance/2 with invalid data returns error changeset" do
       account = account_fixture()
       assert {:error, %Ecto.Changeset{}} = Accounts.update_balance(account, %{balance: nil})
       

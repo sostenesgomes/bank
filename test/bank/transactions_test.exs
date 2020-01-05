@@ -102,7 +102,8 @@ defmodule Bank.TransactionsTest do
       amount = 100.0
 
       user_source = user_fixture(@user_source)
-      source_account = account_fixture(user_source, agency)
+      account = account_fixture(user_source, agency)
+      {:ok, source_account} = Accounts.update_balance(account, %{balance: amount})
 
       user_target = user_fixture(@user_target)
       target_account = account_fixture(user_target, agency)
@@ -113,7 +114,7 @@ defmodule Bank.TransactionsTest do
       target_account_after = Accounts.get_account!(target_account.id)  
 
       assert source_account_after.balance == source_account.balance - amount
-      assert target_account_after.balance == source_account.balance + amount
+      assert target_account_after.balance == target_account.balance + amount
 
       assert source_transaction.operation_id == operation_source.id
       assert source_transaction.account_id == source_account.id
@@ -183,7 +184,8 @@ defmodule Bank.TransactionsTest do
       amount = 100.0
 
       user_source = user_fixture(@user_source)
-      source_account = account_fixture(user_source, agency)
+      account = account_fixture(user_source, agency)
+      {:ok, source_account} = Accounts.update_balance(account, %{balance: amount})
 
       assert {:ok, %Transaction{} = cashout_transaction} = Transactions.create_cashout(source_account, amount)
       

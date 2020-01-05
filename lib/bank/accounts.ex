@@ -88,7 +88,7 @@ defmodule Bank.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_balance(%Account{} = account, %{balance: balance} = new_balance) do
+  def update_balance(%Account{} = account, %{balance: _} = new_balance) do
     account
     |> Account.changeset(new_balance)
     |> Repo.update()

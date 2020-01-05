@@ -40,7 +40,8 @@ defmodule BankWeb.TransactionControllerTest do
 
       user_attrs = user_valid_attrs()
       {:ok, user_source} = Users.get_user_by_email(user_attrs.email)
-      source_account = user_source.account
+      account = user_source.account
+      {:ok, source_account} = Accounts.update_balance(account, %{balance: amount})
       
       user_target = user_fixture(@user_target)
       agency_target = agency_fixture(@agency_target)
@@ -61,7 +62,7 @@ defmodule BankWeb.TransactionControllerTest do
       target_account_after = Accounts.get_account!(target_account.id)  
 
       assert source_account_after.balance == source_account.balance - amount
-      assert target_account_after.balance == source_account.balance + amount
+      assert target_account_after.balance == target_account.balance + amount
     end
 
     test "renders errors when account not exists", %{conn: conn} do
@@ -98,7 +99,9 @@ defmodule BankWeb.TransactionControllerTest do
 
       user_attrs = user_valid_attrs()
       {:ok, user_source} = Users.get_user_by_email(user_attrs.email)
-      source_account = user_source.account
+      
+      account = user_source.account
+      {:ok, source_account} = Accounts.update_balance(account, %{balance: amount})
       
       cashout = %{amount: amount}
 

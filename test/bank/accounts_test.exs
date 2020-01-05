@@ -5,8 +5,6 @@ defmodule Bank.AccountsTest do
 
   describe "accounts" do
     alias Bank.Accounts.Account
-    alias Bank.Users.User
-    alias Bank.Agencies.Agency
 
     def account_fixture() do
       user = user_fixture(user_valid_attrs())

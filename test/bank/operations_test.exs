@@ -4,7 +4,6 @@ defmodule Bank.OperationsTest do
   alias Bank.Operations
 
   describe "operations" do
-    alias Bank.Operations.Operation
 
     test "get_operation_by_code/1 returns the operation with given code" do
       operation_fixture()

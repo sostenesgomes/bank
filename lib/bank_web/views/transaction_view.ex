@@ -27,6 +27,10 @@ defmodule BankWeb.TransactionView do
     }
   end
 
+  def render("cashout.json", %{cashout_transaction: cashout_transaction}) do
+    %{amount: cashout_transaction.amount}
+  end
+
   def render("account_not_found.json", %{account_not_found: account_not_found_message}) do
     account_not_found_message
   end

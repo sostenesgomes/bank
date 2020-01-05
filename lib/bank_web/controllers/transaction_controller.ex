@@ -18,16 +18,42 @@ defmodule BankWeb.TransactionController do
     end
   end
 
+  def cashout(conn, %{"cashout" => cashout_params}) do
+    with {:ok, _} <- validate_cashout_params(cashout_params),
+         %Account{} = source_account <- Guardian.Plug.current_resource(conn) |> Repo.preload(:account) |> Map.get(:account),
+         {:ok, %Transaction{} = cashout_transaction} <- Transactions.create_cashout(source_account, cashout_params["amount"]) do
+      conn
+        |> put_status(:created)
+        |> render("cashout.json", %{cashout_transaction: cashout_transaction})
+    end
+  end
+
   defp validate_transfer_params(params) do
     types = %{target_account_code: :string, target_account_digit: :integer, amount: :float}
     changeset = 
       {%{}, types}
       |> Ecto.Changeset.cast(params, Map.keys(types))
       |> Ecto.Changeset.validate_required([:target_account_code, :target_account_digit, :amount])
+      |> Ecto.Changeset.validate_number(:amount, greater_than: 0)
+
+    case changeset.valid? do
+      true -> {:ok, true}
+      false -> {:error, changeset}
+    end
+  end
+  
+  defp validate_cashout_params(params) do
+    types = %{amount: :float}
+    changeset = 
+      {%{}, types}
+      |> Ecto.Changeset.cast(params, Map.keys(types))
+      |> Ecto.Changeset.validate_required([:amount])
+      |> Ecto.Changeset.validate_number(:amount, greater_than: 0)
   
     case changeset.valid? do
       true -> {:ok, true}
       false -> {:error, changeset}
     end
   end  
+
 end

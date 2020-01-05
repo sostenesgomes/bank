@@ -6,10 +6,6 @@ defmodule Bank.TransactionsTest do
   describe "transactions" do
     alias Bank.Transactions.Transaction
 
-    @valid_attrs %{}
-    @update_attrs %{}
-    @invalid_attrs %{}
-
     @user_source %{name: "User Source", email: "user_source@transactiontest.com", password: "passwd"}
     @user_target %{name: "User Target", email: "user_target@transactiontest.com", password: "passwd"}
 
@@ -84,7 +80,7 @@ defmodule Bank.TransactionsTest do
       assert transaction.operation_id == operation.id
     end
 
-    test "create_transfer_received/3 with invalid data creates a transaction" do
+    test "create_transfer_received/3 with invalid data creates a error Ecto.Changeset" do
       operation_fixture()
       attrs = %{amount: nil, prev_account_balance: nil, new_account_balance: nil}
       agency = agency_fixture(@agency_attrs)
@@ -135,10 +131,7 @@ defmodule Bank.TransactionsTest do
 
     test "create_transfer/3 with amount equal 0" do
       operation_fixture()
-      
-      {:ok, operation_source} = Operations.get_operation_by_code(1)
-      {:ok, operation_target} = Operations.get_operation_by_code(2)
-      
+            
       agency = agency_fixture(@agency_attrs)
       amount = 0.0
 
@@ -151,5 +144,72 @@ defmodule Bank.TransactionsTest do
       assert {:error, %Ecto.Changeset{} = changeset} = Transactions.create_transfer(source_account, target_account, amount)
       assert %{amount: ["must be not equal to 0"]} = errors_on(changeset)
     end
+
+    test "create_cashout_register/3 with valid data creates a transaction" do
+      operation_fixture()
+      
+      amount = -100.0
+      prev_balance = 200.0
+      new_balance = 100.0
+
+      attrs = %{amount: amount, prev_account_balance: prev_balance, new_account_balance: new_balance}
+      agency = agency_fixture(@agency_attrs)
+      {:ok, operation} = Operations.get_operation_by_code(3) 
+
+      user = user_fixture(@user_target)
+      account = account_fixture(user, agency)
+
+      assert {:ok, %Transaction{} = transaction} = Transactions.create_cashout_register(attrs, operation, account)
+    end
+
+    test "create_cashout_register/3 with invalid data return a error Ecto.Changeset" do
+      operation_fixture()
+      attrs = %{amount: nil, prev_account_balance: nil, new_account_balance: nil}
+      agency = agency_fixture(@agency_attrs)
+      {:ok, operation} = Operations.get_operation_by_code(3) 
+
+      user_target = user_fixture(@user_target)
+      target_account = account_fixture(user_target, agency)
+
+      assert {:error, %Ecto.Changeset{}} = Transactions.create_cashout_register(attrs, operation, target_account)
+    end
+
+    test "create_cashout/3 with valid data creates a transaction" do
+      operation_fixture()
+      
+      {:ok, operation_cashout} = Operations.get_operation_by_code(3)
+      
+      agency = agency_fixture(@agency_attrs)
+      amount = 100.0
+
+      user_source = user_fixture(@user_source)
+      source_account = account_fixture(user_source, agency)
+
+      assert {:ok, %Transaction{} = cashout_transaction} = Transactions.create_cashout(source_account, amount)
+      
+      source_account_after = Accounts.get_account!(source_account.id)    
+
+      assert source_account_after.balance == source_account.balance - amount
+
+      assert cashout_transaction.operation_id == operation_cashout.id
+      assert cashout_transaction.account_id == source_account.id
+      assert cashout_transaction.amount == -amount
+      assert cashout_transaction.prev_account_balance == source_account.balance
+      assert cashout_transaction.new_account_balance == source_account.balance - amount
+    end
+
+    test "create_cashout/3 with amount equal 0" do
+      operation_fixture()
+            
+      agency = agency_fixture(@agency_attrs)
+      amount = 0.0
+
+      user_source = user_fixture(@user_source)
+      source_account = account_fixture(user_source, agency)
+
+      assert {:error, %Ecto.Changeset{} = changeset} = Transactions.create_cashout(source_account, amount)
+      assert %{amount: ["must be not equal to 0"]} = errors_on(changeset)
+    end
+
   end
 end

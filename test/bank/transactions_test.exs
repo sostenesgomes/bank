@@ -146,6 +146,22 @@ defmodule Bank.TransactionsTest do
       assert %{amount: ["must be not equal to 0"]} = errors_on(changeset)
     end
 
+    test "create_transfer/3 with insuficient balance on account" do
+      operation_fixture()
+            
+      agency = agency_fixture(@agency_attrs)
+      amount = 100.0
+
+      user_source = user_fixture(@user_source)
+      source_account = account_fixture(user_source, agency)
+
+      user_target = user_fixture(@user_target)
+      target_account = account_fixture(user_target, agency)
+
+      assert {:error, %Ecto.Changeset{} = changeset} = Transactions.create_transfer(source_account, target_account, amount)
+      assert %{balance: ["must be greater than or equal to 0"]} = errors_on(changeset)
+    end  
+
     test "create_cashout_register/3 with valid data creates a transaction" do
       operation_fixture()
       
@@ -212,6 +228,18 @@ defmodule Bank.TransactionsTest do
       assert {:error, %Ecto.Changeset{} = changeset} = Transactions.create_cashout(source_account, amount)
       assert %{amount: ["must be not equal to 0"]} = errors_on(changeset)
     end
+    
+    test "create_cashout/3 with insuficient balance on account" do
+      operation_fixture()
+            
+      agency = agency_fixture(@agency_attrs)
+      user_source = user_fixture(@user_source)
+      source_account = account_fixture(user_source, agency)
 
+      amount = source_account.balance + 100
+
+      assert {:error, %Ecto.Changeset{} = changeset} = Transactions.create_cashout(source_account, amount)
+      assert %{balance: ["must be greater than or equal to 0"]} = errors_on(changeset)
+    end
   end
 end

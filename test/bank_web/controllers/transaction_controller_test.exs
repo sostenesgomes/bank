@@ -88,6 +88,21 @@ defmodule BankWeb.TransactionControllerTest do
       conn = post(conn, Routes.transaction_path(conn, :transfer), transfer: transfer)
       assert ["must be greater than 0"] = json_response(conn, 422)["errors"]["amount"]
     end
+
+    test "renders errors when balance is insuficient", %{conn: conn} do
+      operation_fixture()
+      amount = 100.0
+            
+      user_target = user_fixture(@user_target)
+      agency_target = agency_fixture(@agency_target)
+      target_account = account_fixture(user_target, agency_target)
+
+      transfer = %{target_account_code: target_account.code, target_account_digit: target_account.digit, amount: amount}
+      
+      conn = post(conn, Routes.transaction_path(conn, :transfer), transfer: transfer)
+      
+      assert ["must be greater than or equal to 0"] = json_response(conn, 422)["errors"]["balance"]
+    end
     
   end
 
@@ -123,6 +138,16 @@ defmodule BankWeb.TransactionControllerTest do
     test "renders errors when amount equal 0", %{conn: conn} do
       conn = post(conn, Routes.transaction_path(conn, :cashout), cashout: %{amount: 0})
       assert ["must be greater than 0"] = json_response(conn, 422)["errors"]["amount"]
+    end
+
+    test "renders balance errors on source_account when balance is unsuficient", %{conn: conn} do
+      operation_fixture()
+      amount = 100.0
+
+      cashout = %{amount: amount}
+
+      conn = post(conn, Routes.transaction_path(conn, :cashout), cashout: cashout)
+      assert ["must be greater than or equal to 0"] = json_response(conn, 422)["errors"]["balance"]
     end
     
   end

@@ -1,11 +1,14 @@
 defmodule Bank.UsersTest do
   use Bank.DataCase
 
-  alias Bank.Users
+  alias Bank.{Users, Accounts}
 
   describe "users" do
     alias Bank.Users.User
     alias Bank.Accounts.Account
+
+    @active_account_receive_cash_on_register %{code: "account_receive_cash_on_register", amount: 1000.0, is_active: true}
+    @inactive_account_receive_cash_on_register %{code: "account_receive_cash_on_register", amount: 1000.0, is_active: false}
 
     test "get_user!/1 returns the user with given id" do
       user_create = user_fixture(user_valid_attrs())
@@ -75,6 +78,34 @@ defmodule Bank.UsersTest do
       {:error, changeset} = Repo.insert(changeset)
       
       assert %{email: ["has already been taken"]} = errors_on(changeset)
+    end
+
+    test "create_user_account/1 with active account_receive_cash_on_register promotion" do
+      operation_fixture()
+      {:ok, promotion} = promotion_fixture(@active_account_receive_cash_on_register)
+
+      attrs = user_valid_attrs()
+      agency = agency_fixture(agency_valid_attrs())
+
+      assert {:ok, %User{} = user, %Account{} = account} = Users.create_user_account(agency, attrs)
+      
+      account_after = Accounts.get_account!(account.id)
+
+      assert account_after.balance == promotion.amount
+    end
+
+    test "create_user_account/1 with inactive account_receive_cash_on_register promotion" do
+      operation_fixture()
+      {:ok, _promotion} = promotion_fixture(@inactive_account_receive_cash_on_register)
+
+      attrs = user_valid_attrs()
+      agency = agency_fixture(agency_valid_attrs())
+
+      assert {:ok, %User{} = user, %Account{} = account} = Users.create_user_account(agency, attrs)
+      
+      account_after = Accounts.get_account!(account.id)
+
+      assert account_after.balance == 0
     end
   end
 end

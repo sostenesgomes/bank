@@ -7,8 +7,9 @@ defmodule Bank.Users do
   
   alias Ecto.Multi
   alias Bank.Repo
-  alias Bank.Accounts
+  alias Bank.{Accounts, Transactions, Promotions, Operations}
   alias Bank.Users.User
+  alias Bank.Operations.Operation
 
   @doc """
   Gets a single user.
@@ -74,6 +75,9 @@ defmodule Bank.Users do
       end)  
       |> Multi.run(:account, fn _, %{user: user} ->
         Accounts.create_account(user, agency)
+      end)
+      |> Multi.run(:some_transaction, fn _, %{account: account} ->
+        account_receive_cash_on_register(account)
       end)  
       |> Repo.transaction()
       |> case do
@@ -83,5 +87,31 @@ defmodule Bank.Users do
         {:error, _, failed_value, _} ->
           {:error, failed_value}
       end
-  end 
+  end
+  
+  defp account_receive_cash_on_register(account) do
+    code = "account_receive_cash_on_register"
+
+    with {:ok, promotion} <- Promotions.get_promotion_by_code(code),
+         {:ok, %Operation{} = operation_transfer_received} <- Operations.get_operation_by_code(2) do
+      
+      promotion.is_active
+        |> case do
+          true ->
+            prev_balance = account.balance
+            new_balance = account.balance + promotion.amount
+            transaction_data = %{amount: promotion.amount, prev_account_balance: prev_balance, new_account_balance: new_balance}
+            
+            {:ok, source_account} = Accounts.update_balance(account, %{balance: promotion.amount})
+            
+            Transactions.create_transfer_received(transaction_data, operation_transfer_received, source_account)
+            
+          false -> 
+            {:ok, false}
+        end
+    else
+      _ -> 
+        {:ok, false}
+    end  
+  end  
 end

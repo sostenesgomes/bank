@@ -2,6 +2,7 @@ defmodule Bank.TestHelpers do
 
   alias Bank.{Repo, Users, Agencies, Accounts}
   alias Bank.Operations.Operation
+  alias Bank.Promotions.Promotion
 
   @doc false
   def user_valid_attrs() do
@@ -69,6 +70,18 @@ defmodule Bank.TestHelpers do
     ]
 
     Repo.insert_all(Operation, operations, on_conflict: :nothing)
+  end
+
+  @doc """
+  A helper that create a promotion
+  """
+  def promotion_fixture(attrs \\ %{}) do
+    promotion = 
+      %Promotion{}
+      |> Promotion.changeset(attrs)
+      |> Repo.insert()
+
+    promotion  
   end
 
 end

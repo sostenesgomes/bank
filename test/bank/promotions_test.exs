@@ -4,19 +4,8 @@ defmodule Bank.PromotionsTest do
   alias Bank.Promotions
 
   describe "promotions" do
-    alias Bank.Promotions.Promotion
-
     @active_account_receive_cash_on_register %{code: "account_receive_cash_on_register", amount: 1000.0, is_active: true}
     @inactive_account_receive_cash_on_register %{code: "account_receive_cash_on_register", amount: 1000.0, is_active: false}
-
-    def promotion_fixture(attrs \\ %{}) do
-      promotion = 
-        %Promotion{}
-        |> Promotion.changeset(attrs)
-        |> Repo.insert()
-
-      promotion  
-    end
 
     test "get_promotion_by_code/1 returns active account_receive_cash_on_register with given code " do
       {:ok, promotion} = promotion_fixture(@active_account_receive_cash_on_register)

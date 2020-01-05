@@ -91,6 +91,7 @@ defmodule Bank.Transactions do
   ## Examples
 
       iex> create_cashout(%Account{} = source_account, amount)
+      
       {:ok, %Transaction{}}
 
       iex> create_cashout(%Account{} = source_account, 0)

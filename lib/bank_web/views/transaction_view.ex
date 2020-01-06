@@ -35,10 +35,10 @@ defmodule BankWeb.TransactionView do
     account_not_found_message
   end
 
-  def render("report.json", %{total_added: total_added, total_removed: total_removed}) do
+  def render("report.json", %{total_cash_inflow: total_cash_inflow, total_cash_outflow: total_cash_outflow}) do
     %{
-      total_added: total_added,
-      total_removed: total_removed
+      total_cash_inflow: total_cash_inflow,
+      total_cash_outflow: total_cash_outflow
     }
   end
 

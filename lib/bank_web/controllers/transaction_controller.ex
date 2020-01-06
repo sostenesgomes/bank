@@ -23,7 +23,9 @@ defmodule BankWeb.TransactionController do
          %Account{} = source_account <- Guardian.Plug.current_resource(conn) |> Repo.preload(:account) |> Map.get(:account),
          {:ok, %Transaction{} = cashout_transaction} <- Transactions.create_cashout(source_account, cashout_params["amount"]) do
       
-      BankWeb.Email.cashout_email(Guardian.Plug.current_resource(conn), cashout_transaction.amount)
+      amount_format = format_value_to_money(cashout_transaction.amount)
+
+      BankWeb.Email.cashout_email(Guardian.Plug.current_resource(conn), amount_format)
         |> log_cashout_email()
 
       conn
@@ -33,15 +35,11 @@ defmodule BankWeb.TransactionController do
   end
 
   def report(conn, report_params) do
-    
-    report_params["type"]
-      |> case do
-        "total" ->
-          {:ok, total_added, total_removed} = report("total")
-          conn
-            |> put_status(:ok)
-            |> render("report.json", %{total_added: total_added, total_removed: total_removed})
-      end 
+    with {:ok, total_cash_inflow, total_cash_outflow} = do_report(report_params["type"], report_params["reference"]) do
+      conn
+        |> put_status(:ok)
+        |> render("report.json", %{total_cash_inflow: total_cash_inflow, total_cash_outflow: total_cash_outflow})
+    end 
   end
 
   defp validate_transfer_params(params) do
@@ -78,10 +76,10 @@ defmodule BankWeb.TransactionController do
       |> Repo.insert()
   end
   
-  defp report(type) when type == "total" do
+  defp do_report(type, _reference) when type == "total" do
     import Ecto.Query 
     
-    total_added = 
+    total_cash_inflow = 
       Repo.one(from t in Transaction, where: t.amount > ^0, select: sum(t.amount))
         |> case do
           nil ->
@@ -90,7 +88,7 @@ defmodule BankWeb.TransactionController do
           format_value_to_money(value)
         end
         
-    total_removed = 
+    total_cash_outflow = 
       Repo.one(from t in Transaction, where: t.amount < ^0, select: sum(t.amount))
         |> case do
           nil ->
@@ -99,9 +97,64 @@ defmodule BankWeb.TransactionController do
           format_value_to_money(value)
         end  
     
-    {:ok, total_added, total_removed}
+    {:ok, total_cash_inflow, total_cash_outflow}
   end
 
+  defp do_report(type, reference) when type in ["day", "month", "year"] do
+    import Ecto.Query 
+    
+    masks = %{"day" => "YYYY-MM-DD", "month" => "YYYY-MM", "year" => "YYYY"}
+    mask = masks[type]
+                
+    total_cash_inflow = 
+      Repo.one(from(t in Transaction, where: t.amount > ^0 and fragment("to_char(?, ?)", t.inserted_at, ^mask) == ^reference, select: sum(t.amount)))
+        |> case do
+          nil ->
+            0
+        value when value > 0 ->
+          format_value_to_money(value)
+        end
+        
+    total_cash_outflow = 
+      Repo.one(from(t in Transaction, where: t.amount < ^0 and fragment("to_char(?, ?)", t.inserted_at, ^mask) == ^reference, select: sum(t.amount)))
+        |> case do
+          nil ->
+            0
+        value when value < 0 ->
+          format_value_to_money(value)
+        end  
+    
+    {:ok, total_cash_inflow, total_cash_outflow}
+  end
+
+  '
+  defp report(type) when type in ["day", "month", "year"] do
+    import Ecto.Query
+    
+    type
+      |> case do
+        "day" ->
+          ref = "YYYY-MM-DD"
+        "month" ->
+          ref = "YYYY-MM"
+        "year" ->
+          ref = "YYYY"  
+      end
+    
+    list_added = 
+      Repo.all(
+        from(t in Transaction,
+          where: t.amount < ^0 
+          select: %{ref: fragment("to_char(?, ?) as date", t.inserted_at, ^ref), total: sum(t.amount)},
+          group_by: [fragment("date")],
+          order_by: t.inserted_at
+        )
+      )
+    
+    list_added  
+    {:ok, total_added, total_removed}
+  end
+'
   defp format_value_to_money(value) do
     money = Money.add(Money.new(0), value)
     Money.to_string(money)

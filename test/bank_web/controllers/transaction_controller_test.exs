@@ -155,7 +155,7 @@ defmodule BankWeb.TransactionControllerTest do
   describe "email" do
     test "test checkout_email with given user and amount" do
       user = %{name: "Customer Test", email: "customermailtest@bank.com"}  
-      amount_format = "500,00"
+      amount_format = "R$ 500,00"
       
       assert %Bamboo.Email{} = email = BankWeb.Email.cashout_email(user, amount_format)
       
@@ -168,13 +168,13 @@ defmodule BankWeb.TransactionControllerTest do
       assert email.headers == %{}
       assert email.private == %{}
       assert email.subject == "Cashout Performed"
-      assert email.html_body == "<p>Hi, #{user.name}. <br><br> Your cash out has been successfully completed. <br> Amount: R$ #{amount_format}</p>"
-      assert email.text_body == "Hi, #{user.name}. Your cash out has been successfully completed. Amount: R$ #{amount_format}"
+      assert email.html_body == "<p>Hi, #{user.name}. <br><br> Your cash out has been successfully completed. <br> Amount: #{amount_format}</p>"
+      assert email.text_body == "Hi, #{user.name}. Your cash out has been successfully completed. Amount: #{amount_format}"
     end
   end
 
   describe "report" do
-    test "test repor total", %{conn: conn} do
+    test "test report total", %{conn: conn} do
       operation_fixture()
       amount = 100.0
 
@@ -190,11 +190,97 @@ defmodule BankWeb.TransactionControllerTest do
       transfer = %{target_account_code: target_account.code, target_account_digit: target_account.digit, amount: amount}
       post(conn, Routes.transaction_path(conn, :transfer), transfer: transfer)
 
-      conn = get(conn, Routes.transaction_path(conn, :report), type: "total")
+      conn = get(conn, Routes.transaction_path(conn, :report), type: "total", reference: nil)
       response = json_response(conn, 200)
 
-      assert "R$ 100,00" == Map.get(response, "total_added")
-      assert "R$ -100,00" == Map.get(response, "total_removed")
+      assert "R$ 100,00" == Map.get(response, "total_cash_inflow")
+      assert "R$ -100,00" == Map.get(response, "total_cash_outflow")
+    end
+
+    test "test report by day", %{conn: conn} do
+      operation_fixture()
+      amount = 100.0
+
+      user_attrs = user_valid_attrs()
+      {:ok, user_source} = Users.get_user_by_email(user_attrs.email)
+      account = user_source.account
+      {:ok, _source_account} = Accounts.update_balance(account, %{balance: amount})
+      
+      user_target = user_fixture(@user_target)
+      agency_target = agency_fixture(@agency_target)
+      target_account = account_fixture(user_target, agency_target)
+
+      transfer = %{target_account_code: target_account.code, target_account_digit: target_account.digit, amount: amount}
+      post(conn, Routes.transaction_path(conn, :transfer), transfer: transfer)
+
+      today = Date.utc_today
+      day = 
+        [today.year, today.month, today.day]
+          |> Enum.map(&to_string/1)
+          |> Enum.map(&String.pad_leading(&1, 2, "0"))
+          |> Enum.join("-")
+          
+      conn = get(conn, Routes.transaction_path(conn, :report), type: "day", reference: day)
+      response = json_response(conn, 200)
+
+      assert "R$ 100,00" == Map.get(response, "total_cash_inflow")
+      assert "R$ -100,00" == Map.get(response, "total_cash_outflow")
+    end
+
+    test "test report by month", %{conn: conn} do
+      operation_fixture()
+      amount = 100.0
+
+      user_attrs = user_valid_attrs()
+      {:ok, user_source} = Users.get_user_by_email(user_attrs.email)
+      account = user_source.account
+      {:ok, _source_account} = Accounts.update_balance(account, %{balance: amount})
+      
+      user_target = user_fixture(@user_target)
+      agency_target = agency_fixture(@agency_target)
+      target_account = account_fixture(user_target, agency_target)
+
+      transfer = %{target_account_code: target_account.code, target_account_digit: target_account.digit, amount: amount}
+      post(conn, Routes.transaction_path(conn, :transfer), transfer: transfer)
+
+      today = Date.utc_today
+      month = 
+        [today.year, today.month]
+          |> Enum.map(&to_string/1)
+          |> Enum.map(&String.pad_leading(&1, 2, "0"))
+          |> Enum.join("-")
+          
+      conn = get(conn, Routes.transaction_path(conn, :report), type: "month", reference: month)
+      response = json_response(conn, 200)
+
+      assert "R$ 100,00" == Map.get(response, "total_cash_inflow")
+      assert "R$ -100,00" == Map.get(response, "total_cash_outflow")
+    end
+
+    test "test report by year", %{conn: conn} do
+      operation_fixture()
+      amount = 100.0
+
+      user_attrs = user_valid_attrs()
+      {:ok, user_source} = Users.get_user_by_email(user_attrs.email)
+      account = user_source.account
+      {:ok, _source_account} = Accounts.update_balance(account, %{balance: amount})
+      
+      user_target = user_fixture(@user_target)
+      agency_target = agency_fixture(@agency_target)
+      target_account = account_fixture(user_target, agency_target)
+
+      transfer = %{target_account_code: target_account.code, target_account_digit: target_account.digit, amount: amount}
+      post(conn, Routes.transaction_path(conn, :transfer), transfer: transfer)
+
+      today = Date.utc_today
+      year = to_string(today.year)
+          
+      conn = get(conn, Routes.transaction_path(conn, :report), type: "year", reference: year)
+      response = json_response(conn, 200)
+
+      assert "R$ 100,00" == Map.get(response, "total_cash_inflow")
+      assert "R$ -100,00" == Map.get(response, "total_cash_outflow")
     end
   end
 end

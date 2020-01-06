@@ -1,0 +1,351 @@
+{
+	"info": {
+		"_postman_id": "bc057951-e19e-4d3c-a0f2-4f7e163456e5",
+		"name": "Bank",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create User and Account 1",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user\": {\n        \"name\": \"user1\",\n        \"password\": \"passwd\",\n        \"email\": \"email1@mail.com\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:4000/api/users/create",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"users",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create User and Account 2",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user\": {\n        \"name\": \"user2\",\n        \"password\": \"passwd\",\n        \"email\": \"email2@mail.com\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:4000/api/users/create",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"users",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login User 1",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"email\": \"email1@mail.com\",\n\t\"password\": \"passwd\"\n}"
+				},
+				"url": {
+					"raw": "localhost:4000/api/users/login",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Transfer",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJiYW5rIiwiZXhwIjoxNTgwNzMyMDU2LCJpYXQiOjE1NzgzMTI4NTYsImlzcyI6ImJhbmsiLCJqdGkiOiIyMjQxYmYwNS0zN2I4LTQ2ODgtYWEzOC0zYTU4NjJjNDAyOGEiLCJuYmYiOjE1NzgzMTI4NTUsInN1YiI6IjEiLCJ0eXAiOiJhY2Nlc3MifQ.Dnl5Vk7bPUTbI0FVHhBkL0U6tnOVPFzUbNti0DEEn-ayZPVg5Od_DYjekYuDXRN20rom_wPCVp5-RGX4qHJ44g",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"transfer\": {\n\t\t\"target_account_code\": \"5425\",\n\t\t\"target_account_digit\": 1,\n\t\t\"amount\": 500.0\t\n\t}\n}"
+				},
+				"url": {
+					"raw": "localhost:4000/api/transactions/transfer",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"transactions",
+						"transfer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cashout",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"type": "text",
+						"value": "Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJiYW5rIiwiZXhwIjoxNTgwNzMyMDU2LCJpYXQiOjE1NzgzMTI4NTYsImlzcyI6ImJhbmsiLCJqdGkiOiIyMjQxYmYwNS0zN2I4LTQ2ODgtYWEzOC0zYTU4NjJjNDAyOGEiLCJuYmYiOjE1NzgzMTI4NTUsInN1YiI6IjEiLCJ0eXAiOiJhY2Nlc3MifQ.Dnl5Vk7bPUTbI0FVHhBkL0U6tnOVPFzUbNti0DEEn-ayZPVg5Od_DYjekYuDXRN20rom_wPCVp5-RGX4qHJ44g"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"cashout\": {\n\t\t\"amount\": 100.0\t\n\t}\n}"
+				},
+				"url": {
+					"raw": "localhost:4000/api/transactions/cashout",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"transactions",
+						"cashout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Report Total",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:4000/api/transactions/report?type=total&reference=",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"transactions",
+						"report"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "total"
+						},
+						{
+							"key": "reference",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Report By Day",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:4000/api/transactions/report?type=day&reference=2020-01-06",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"transactions",
+						"report"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "day"
+						},
+						{
+							"key": "reference",
+							"value": "2020-01-06"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Report By Month",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:4000/api/transactions/report?type=month&reference=2020-01",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"transactions",
+						"report"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "month"
+						},
+						{
+							"key": "reference",
+							"value": "2020-01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Report By Year",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "localhost:4000/api/transactions/report?type=year&reference=2020",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"transactions",
+						"report"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "year"
+						},
+						{
+							"key": "reference",
+							"value": "2020"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

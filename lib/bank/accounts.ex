@@ -7,19 +7,8 @@ defmodule Bank.Accounts do
   alias Bank.Repo
 
   alias Bank.Accounts.Account
-
-  @doc """
-  Returns the list of accounts.
-
-  ## Examples
-
-      iex> list_accounts()
-      [%Account{}, ...]
-
-  """
-  def list_accounts do
-    Repo.all(Account)
-  end
+  alias Bank.Users.User
+  alias Bank.Agencies.Agency
 
   @doc """
   Gets a single account.
@@ -42,7 +31,29 @@ defmodule Bank.Accounts do
       |> Repo.preload(:agency)
 
     account
-  end  
+  end
+  
+  @doc """
+  Gets a single Account by code and digit.
+
+  ## Examples
+
+      iex> get_account_by_code_dg(1234, 1)
+      {:ok, %Account{}}
+
+      iex> get_account_by_code_dg(0000, 5)
+      {:error, :not_found}
+  """
+  def get_account_by_code_dg(code, digit) do 
+    Repo.get_by(Account, code: code, digit: digit) 
+    |> case do 
+        nil ->
+          {:error, :account_not_found}
+        account ->
+          {:ok, account}  
+      end
+  end
+
   @doc """
   Creates a account.
 
@@ -55,7 +66,7 @@ defmodule Bank.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_account(user, agency) do
+  def create_account(%User{} = user, %Agency{} = agency) do
     attrs = %{code: generate_account_code(user.id), digit: 1, balance: 0}
     
     %Account{}
@@ -66,57 +77,28 @@ defmodule Bank.Accounts do
   end
 
   @doc """
-  Updates a account.
+  Updates account balance.
 
   ## Examples
 
-      iex> update_account(account, %{field: new_value})
+      iex> update_balance(account, %{balance: balance})
       {:ok, %Account{}}
 
-      iex> update_account(account, %{field: bad_value})
+      iex> update_balance(account, %{balance: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_account(%Account{} = account, attrs) do
+  def update_balance(%Account{} = account, %{balance: _} = new_balance) do
     account
-    |> Account.changeset(attrs)
+    |> Account.changeset(new_balance)
     |> Repo.update()
-  end
-
-  @doc """
-  Deletes a Account.
-
-  ## Examples
-
-      iex> delete_account(account)
-      {:ok, %Account{}}
-
-      iex> delete_account(account)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_account(%Account{} = account) do
-    Repo.delete(account)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking account changes.
-
-  ## Examples
-
-      iex> change_account(account)
-      %Ecto.Changeset{source: %Account{}}
-
-  """
-  def change_account(%Account{} = account) do
-    Account.changeset(account, %{})
   end
 
   @doc """
   Returns and String containing a code to account
 
     iex> generate_account_code(account)
-    %Ecto.Changeset{source: %Account{}}
+    "123456"
 
   """
   def generate_account_code(user_id) do

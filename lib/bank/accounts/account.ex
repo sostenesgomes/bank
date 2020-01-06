@@ -8,10 +8,10 @@ defmodule Bank.Accounts.Account do
   schema "accounts" do
     field :code, :string
     field :digit, :integer
-    field :balance, :decimal
+    field :balance, :float
     belongs_to :user, User
     belongs_to :agency, Agency
-
+    
     timestamps()
   end
 
@@ -20,5 +20,6 @@ defmodule Bank.Accounts.Account do
     account
     |> cast(attrs, [:code, :digit, :balance])
     |> validate_required([:code, :digit, :balance])
+    |> validate_number(:balance, greater_than_or_equal_to: 0)
   end
 end

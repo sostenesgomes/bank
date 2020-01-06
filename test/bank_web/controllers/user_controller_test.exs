@@ -7,7 +7,7 @@ defmodule BankWeb.UserControllerTest do
 
   describe "create user" do
     test "renders user when data is valid", %{conn: conn} do
-      agency_fixture()
+      agency_fixture(agency_valid_attrs())
       conn = post(conn, Routes.user_path(conn, :create), user: user_valid_attrs())
       response = json_response(conn, 201)
       assert "User Test" == Map.get(response, "name")
@@ -15,7 +15,7 @@ defmodule BankWeb.UserControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      agency_fixture()
+      agency_fixture(agency_valid_attrs())
       conn = post(conn, Routes.user_path(conn, :create), user: user_invalid_attrs())
       assert json_response(conn, 422)["errors"] != %{}
     end
@@ -24,7 +24,7 @@ defmodule BankWeb.UserControllerTest do
   describe "login" do
     
     test "when data is valid", %{conn: conn} do
-      user = user_fixture()
+      user = user_fixture(user_valid_attrs())
       conn = post(conn, Routes.user_path(conn, :login), email: user.email, password: user.password)
       response = json_response(conn, 200)
       
@@ -34,7 +34,7 @@ defmodule BankWeb.UserControllerTest do
     end
 
     test "renders unauthorized when data is invalid", %{conn: conn} do
-      user = user_fixture()
+      user = user_fixture(user_valid_attrs())
       conn = post(conn, Routes.user_path(conn, :login), email: user.email, password: "wrong pass")
       
       assert json_response(conn, 401) == "Unauthorized"

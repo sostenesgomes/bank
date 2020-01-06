@@ -7,21 +7,9 @@ defmodule Bank.Users do
   
   alias Ecto.Multi
   alias Bank.Repo
-  alias Bank.Accounts
+  alias Bank.{Accounts, Transactions, Promotions, Operations}
   alias Bank.Users.User
-
-  @doc """
-  Returns the list of users.
-
-  ## Examples
-
-      iex> list_users()
-      [%User{}, ...]
-
-  """
-  def list_users do
-    Repo.all(User)
-  end
+  alias Bank.Operations.Operation
 
   @doc """
   Gets a single user.
@@ -79,7 +67,18 @@ defmodule Bank.Users do
     |> Repo.insert()
   end
 
-  @doc false
+  @doc """
+  Creates a user, bank account to user and perform actions on user created event
+
+  ## Examples
+
+    iex> create_user_account(agency, attrs \\ %{})      
+    {:ok, %Transaction{}}
+
+    iex> create_user_account(agency, attrs \\ %{})
+    {:error, failed_value}
+
+  """
   def create_user_account(agency, attrs \\ %{}) do
     Multi.new()
       |> Multi.run(:user, fn _, _ ->
@@ -87,6 +86,9 @@ defmodule Bank.Users do
       end)  
       |> Multi.run(:account, fn _, %{user: user} ->
         Accounts.create_account(user, agency)
+      end)
+      |> Multi.run(:some_transaction, fn _, %{account: account} ->
+        account_receive_cash_on_register(account)
       end)  
       |> Repo.transaction()
       |> case do
@@ -96,52 +98,43 @@ defmodule Bank.Users do
         {:error, _, failed_value, _} ->
           {:error, failed_value}
       end
-  end 
+  end
   
   @doc """
-  Updates a user.
+  Apply promotions on user created event
 
   ## Examples
 
-      iex> update_user(user, %{field: new_value})
-      {:ok, %User{}}
+    iex> account_receive_cash_on_register(account)      
+    {:ok, %Transaction{}}
 
-      iex> update_user(user, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_user(%User{} = user, attrs) do
-    user
-    |> User.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Deletes a User.
-
-  ## Examples
-
-      iex> delete_user(user)
-      {:ok, %User{}}
-
-      iex> delete_user(user)
-      {:error, %Ecto.Changeset{}}
+    iex> account_receive_cash_on_register(account)
+    {:ok, false}
 
   """
-  def delete_user(%User{} = user) do
-    Repo.delete(user)
-  end
+  defp account_receive_cash_on_register(account) do
+    code = "account_receive_cash_on_register"
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking user changes.
-
-  ## Examples
-
-      iex> change_user(user)
-      %Ecto.Changeset{source: %User{}}
-
-  """
-  def change_user(%User{} = user) do
-    User.changeset(user, %{})
-  end
+    with {:ok, promotion} <- Promotions.get_promotion_by_code(code),
+         {:ok, %Operation{} = operation_transfer_received} <- Operations.get_operation_by_code(2) do
+      
+      promotion.is_active
+        |> case do
+          true ->
+            prev_balance = account.balance
+            new_balance = account.balance + promotion.amount
+            transaction_data = %{amount: promotion.amount, prev_account_balance: prev_balance, new_account_balance: new_balance}
+            
+            {:ok, source_account} = Accounts.update_balance(account, %{balance: promotion.amount})
+            
+            Transactions.create_transfer_received(transaction_data, operation_transfer_received, source_account)
+            
+          false -> 
+            {:ok, false}
+        end
+    else
+      _ -> 
+        {:ok, false}
+    end  
+  end  
 end

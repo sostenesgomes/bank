@@ -20,6 +20,13 @@ defmodule BankWeb.FallbackController do
     |> render(:"404")
   end
 
+  def call(conn, {:error, :account_not_found}) do
+    conn
+    |> put_status(:not_found)
+    |> put_view(BankWeb.TransactionView)
+    |> render("account_not_found.json", %{account_not_found: "Account not found"})
+  end
+
   def call(conn, {:error, :unauthorized}) do
     conn
     |> put_status(:unauthorized)
@@ -29,7 +36,7 @@ defmodule BankWeb.FallbackController do
 
   def call(conn, {:error, _}) do
     conn
-    |> put_status(:not_allowed)
+    |> put_status(:bad_request)
     |> put_view(BankWeb.ErrorView)
     |> render(:"400")
   end

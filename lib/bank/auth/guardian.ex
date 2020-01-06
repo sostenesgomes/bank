@@ -25,6 +25,15 @@ defmodule Bank.Auth.Guardian do
 
   @doc """
     Authenticate user and return the user data and token created.
+
+    ## Examples
+
+      iex> authenticate(email, password)      
+      {:ok, user, token}
+
+      iex> authenticate(email, password)
+      {:error, :unauthorized}
+
   """
   def authenticate(email, password) do
     with {:ok, user} <- Users.get_user_by_email(email) do

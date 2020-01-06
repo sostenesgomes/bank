@@ -10,6 +10,18 @@ defmodule Bank.Transactions do
   alias Bank.Operations.Operation
   alias Bank.Accounts.Account
 
+  @doc """
+  Creates a transaction of type transfer sent.
+
+  ## Examples
+
+      iex> create_transfer_sent(attrs, %Operation{} = operation, %Account{} = source_account, %Account{} = target_account)
+      {:ok, %Transaction{}}
+
+      iex> iex> create_transfer_sent(attrs, %Operation{} = operation, %Account{} = source_account, %Account{} = target_account)
+      {:error, %Ecto.Changeset{}}
+  
+  """
   def create_transfer_sent(attrs, %Operation{} = operation, %Account{} = source_account, %Account{} = target_account) do
     %Transaction{}
     |> Transaction.changeset(attrs)
@@ -19,6 +31,18 @@ defmodule Bank.Transactions do
     |> Repo.insert()
   end
 
+  @doc """
+  Creates a transaction of type transfer received.
+
+  ## Examples
+
+      iex> create_transfer_received(attrs, %Operation{} = operation, %Account{} = account)
+      {:ok, %Transaction{}}
+
+      iex> iex> create_transfer_received(attrs, %Operation{} = operation, %Account{} = account)
+      {:error, %Ecto.Changeset{}}
+  
+  """
   def create_transfer_received(attrs, %Operation{} = operation, %Account{} = account) do
     %Transaction{}
     |> Transaction.changeset(attrs)
@@ -33,7 +57,7 @@ defmodule Bank.Transactions do
   ## Examples
 
       iex> create_transaction(%Account{} = source_account, %Account{} = target_account, amount)
-      {:ok, %Transaction{}}
+      {:ok, source_transaction, target_transaction}
 
       iex> create_transaction(%Account{} = source_account, %Account{} = target_account, 0)
       {:error, failed_value}
@@ -77,6 +101,18 @@ defmodule Bank.Transactions do
 
   end
 
+  @doc """
+  Creates a transaction of type cashout.
+
+  ## Examples
+
+      iex> create_cashout_register(attrs, %Operation{} = operation, %Account{} = account)
+      {:ok, %Transaction{}}
+
+      iex> iex> create_cashout_register(attrs, %Operation{} = operation, %Account{} = account)
+      {:error, %Ecto.Changeset{}}
+  
+  """
   def create_cashout_register(attrs, %Operation{} = operation, %Account{} = account) do
     %Transaction{}
     |> Transaction.changeset(attrs)
@@ -90,12 +126,11 @@ defmodule Bank.Transactions do
 
   ## Examples
 
-      iex> create_cashout(%Account{} = source_account, amount)
-      
-      {:ok, %Transaction{}}
+    iex> create_cashout(%Account{} = source_account, amount)      
+    {:ok, %Transaction{}}
 
-      iex> create_cashout(%Account{} = source_account, 0)
-      {:error, failed_value}
+    iex> create_cashout(%Account{} = source_account, 0)
+    {:error, failed_value}
 
   """
   def create_cashout(%Account{} = source_account, amount) do

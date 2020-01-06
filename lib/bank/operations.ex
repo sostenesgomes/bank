@@ -14,7 +14,7 @@ defmodule Bank.Operations do
   ## Examples
 
       iex> get_operation_by_code(1)
-      {:ok, %User{}}
+      {:ok, %Operation{}}
 
       iex> get_operation_by_code(0)
       {:error, :not_found}

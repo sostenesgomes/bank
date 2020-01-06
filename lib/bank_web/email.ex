@@ -1,6 +1,13 @@
 defmodule BankWeb.Email do
+  @moduledoc """
+  The module to build emails
+  """
+
   import Bamboo.Email
 
+  @moduledoc """
+  Create a cashout email
+  """
   def cashout_email(user, amount_format) do
     new_email(
       to: user.email,

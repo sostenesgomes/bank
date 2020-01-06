@@ -39,7 +39,7 @@ defmodule Bank.Accounts do
   ## Examples
 
       iex> get_account_by_code_dg(1234, 1)
-      {:ok, %User{}}
+      {:ok, %Account{}}
 
       iex> get_account_by_code_dg(0000, 5)
       {:error, :not_found}
@@ -98,7 +98,7 @@ defmodule Bank.Accounts do
   Returns and String containing a code to account
 
     iex> generate_account_code(account)
-    %Ecto.Changeset{source: %Account{}}
+    "123456"
 
   """
   def generate_account_code(user_id) do

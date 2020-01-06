@@ -67,7 +67,18 @@ defmodule Bank.Users do
     |> Repo.insert()
   end
 
-  @doc false
+  @doc """
+  Creates a user, bank account to user and perform actions on user created event
+
+  ## Examples
+
+    iex> create_user_account(agency, attrs \\ %{})      
+    {:ok, %Transaction{}}
+
+    iex> create_user_account(agency, attrs \\ %{})
+    {:error, failed_value}
+
+  """
   def create_user_account(agency, attrs \\ %{}) do
     Multi.new()
       |> Multi.run(:user, fn _, _ ->
@@ -89,6 +100,18 @@ defmodule Bank.Users do
       end
   end
   
+  @doc """
+  Apply promotions on user created event
+
+  ## Examples
+
+    iex> account_receive_cash_on_register(account)      
+    {:ok, %Transaction{}}
+
+    iex> account_receive_cash_on_register(account)
+    {:ok, false}
+
+  """
   defp account_receive_cash_on_register(account) do
     code = "account_receive_cash_on_register"
 

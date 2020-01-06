@@ -1,4 +1,5 @@
 defmodule BankWeb.TransactionController do
+  
   use BankWeb, :controller
 
   alias Bank.{Repo, Transactions, Accounts}
@@ -7,6 +8,10 @@ defmodule BankWeb.TransactionController do
 
   action_fallback BankWeb.FallbackController
 
+  @doc """
+  Perform a transfer and render response
+
+  """
   def transfer(conn, %{"transfer" => transfer_params}) do
     with {:ok, _} <- validate_transfer_params(transfer_params),
          %Account{} = source_account <- Guardian.Plug.current_resource(conn) |> Repo.preload(:account) |> Map.get(:account),
@@ -18,6 +23,10 @@ defmodule BankWeb.TransactionController do
     end
   end
 
+  @doc """
+  Perform a cashout, send email to user and render response
+
+  """
   def cashout(conn, %{"cashout" => cashout_params}) do
     with {:ok, _} <- validate_cashout_params(cashout_params),
          %Account{} = source_account <- Guardian.Plug.current_resource(conn) |> Repo.preload(:account) |> Map.get(:account),
@@ -34,6 +43,10 @@ defmodule BankWeb.TransactionController do
     end
   end
 
+  @doc """
+  Perform a report and render response
+
+  """
   def report(conn, report_params) do
     with {:ok, total_cash_inflow, total_cash_outflow} = do_report(report_params["type"], report_params["reference"]) do
       conn
@@ -42,6 +55,10 @@ defmodule BankWeb.TransactionController do
     end 
   end
 
+  @doc """
+  Check if params on transfer request are valid
+
+  """
   defp validate_transfer_params(params) do
     types = %{target_account_code: :string, target_account_digit: :integer, amount: :float}
     changeset = 
@@ -56,6 +73,10 @@ defmodule BankWeb.TransactionController do
     end
   end
   
+  @doc """
+  Check if params on cashout request are valid
+
+  """
   defp validate_cashout_params(params) do
     types = %{amount: :float}
     changeset = 
@@ -70,12 +91,20 @@ defmodule BankWeb.TransactionController do
     end
   end
   
+  @doc """
+  Insert email log
+
+  """
   defp log_cashout_email(email) do
     %Bank.EmailLog{}
       |> Bank.EmailLog.changeset(%{bamboo_struct: Map.from_struct(email), status: 1})
       |> Repo.insert()
   end
   
+  @doc """
+  Return information about total of transacions to total report
+
+  """
   defp do_report(type, _reference) when type == "total" do
     import Ecto.Query 
     
@@ -100,6 +129,10 @@ defmodule BankWeb.TransactionController do
     {:ok, total_cash_inflow, total_cash_outflow}
   end
 
+  @doc """
+  Return information about total of transacions to day, month and year report
+
+  """
   defp do_report(type, reference) when type in ["day", "month", "year"] do
     import Ecto.Query 
     
@@ -127,6 +160,10 @@ defmodule BankWeb.TransactionController do
     {:ok, total_cash_inflow, total_cash_outflow}
   end
 
+  @doc """
+  Format an value (100.0) to BRL format (R$ 100,00) and parse to string
+
+  """
   defp format_value_to_money(value) do
     money = Money.add(Money.new(0), value)
     Money.to_string(money)

@@ -72,7 +72,7 @@ defmodule BankWeb.TransactionController do
   
   defp log_cashout_email(email) do
     %Bank.EmailLog{}
-      |> Bank.EmailLog.changeset(%{bamboo_struct: Jason.encode(email), status: 1})
+      |> Bank.EmailLog.changeset(%{bamboo_struct: Map.from_struct(email), status: 1})
       |> Repo.insert()
   end
   
@@ -127,34 +127,6 @@ defmodule BankWeb.TransactionController do
     {:ok, total_cash_inflow, total_cash_outflow}
   end
 
-  '
-  defp report(type) when type in ["day", "month", "year"] do
-    import Ecto.Query
-    
-    type
-      |> case do
-        "day" ->
-          ref = "YYYY-MM-DD"
-        "month" ->
-          ref = "YYYY-MM"
-        "year" ->
-          ref = "YYYY"  
-      end
-    
-    list_added = 
-      Repo.all(
-        from(t in Transaction,
-          where: t.amount < ^0 
-          select: %{ref: fragment("to_char(?, ?) as date", t.inserted_at, ^ref), total: sum(t.amount)},
-          group_by: [fragment("date")],
-          order_by: t.inserted_at
-        )
-      )
-    
-    list_added  
-    {:ok, total_added, total_removed}
-  end
-'
   defp format_value_to_money(value) do
     money = Money.add(Money.new(0), value)
     Money.to_string(money)

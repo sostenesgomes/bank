@@ -41,7 +41,7 @@ defmodule BankWeb.Router do
     pipe_through [:api, :auth]
     
     post "/transactions/transfer", TransactionController, :transfer
-    post "/cashout", TransactionController, :cashout
+    post "/transactions/cashout", TransactionController, :cashout
   end
 
 end

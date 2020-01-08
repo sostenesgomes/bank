@@ -167,7 +167,7 @@ Response - 200 OK
 
  # Application
 
- ## Módulos
+ ## Modules
 
  - The existing modules in the application are:
 	- **Agencies**: Module responsible for storing and providing bank branch data. An agency may have multiple bank accounts.

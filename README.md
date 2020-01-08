@@ -168,17 +168,16 @@ Response - 200 OK
  # Application
 
  ## Modules
-
- - The existing modules in the application are:
-	- **Agencies**: Module responsible for storing and providing bank branch data. An agency may have multiple bank accounts.
-	- **Accounts**: Module responsible for storing and providing bank account data. A bank account belongs to a user and also to a bank branch. An account can also have multiple transactions.
-	- **Users**: Module responsible for storing and providing data about users. A user can have a bank account.
-	- **Transactions**: Module responsible for storing and providing data on bank transactions, such as transfer and cashout. A transaction belongs to an account. The transaction belongs to an operation.
-	- **Operations**: Module responsible for storing and providing Operations data. Operations are the records to identify the type of transaction. There are currently three operations:
-		- 1 => Transfer Sent
-		- 2 => Transfer Received
-		- 3 => Cashout
-	- **Promotions**: Module responsible for storing and providing data about promotions. Promotions are applied at events. For example, there is an active promotion to give the user 1000.00 to their account when they sign up.
+ The existing modules in the application are:
+ - **Agencies**: Module responsible for storing and providing bank branch data. An agency may have multiple bank accounts.
+ - **Accounts**: Module responsible for storing and providing bank account data. A bank account belongs to a user and also to a bank branch. An account can also have multiple transactions.
+ - **Users**: Module responsible for storing and providing data about users. A user can have a bank account.
+ - **Transactions**: Module responsible for storing and providing data on bank transactions, such as transfer and cashout. A transaction belongs to an account. The transaction belongs to an operation.
+ - **Operations**: Module responsible for storing and providing Operations data. Operations are the records to identify the type of transaction. There are currently three operations:
+	- 1 => Transfer Sent
+	- 2 => Transfer Received
+	- 3 => Cashout
+- **Promotions**: Module responsible for storing and providing data about promotions. Promotions are applied at events. For example, there is an active promotion to give the user 1000.00 to their account when they sign up.
 
  ## Details
  The application is delivered by the Phoenix framework.
